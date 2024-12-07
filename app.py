@@ -14,9 +14,9 @@ class Transaction(db.Model):
     amount = db.Column(db.Float, nullable=False)
     date = db.Column(db.Date, default=datetime.date.today)
     description = db.Column(db.String(255), nullable=False)
-    category = db.Column(db.String(100), nullable=False)  # Ejemplo: "Alimentos", "Renta"
-    type = db.Column(db.String(10), nullable=False)       # "Ingreso" o "Gasto"
-    payment_method = db.Column(db.String(50), nullable=False)  # Ejemplo: "Efectivo", "Tarjeta"
+    category = db.Column(db.String(100), nullable=False)
+    type = db.Column(db.String(10), nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
 
 # Crear la base de datos
 with app.app_context():
@@ -29,20 +29,36 @@ def index():
     total_expense = db.session.query(db.func.sum(Transaction.amount)).filter(Transaction.type == "Gasto").scalar() or 0
     balance = total_income - total_expense
 
-    # Crear gráfico de gastos por categoría
-    categories = ['Alimentos', 'Renta', 'Transporte', 'Entretenimiento', 'Salario']
+    # Obtener historial de transacciones
+    all_transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+
+    # Pasar los datos de las transacciones al frontend
+    return render_template('index.html', 
+                           total_income=total_income, 
+                           total_expense=total_expense, 
+                           balance=balance, 
+                           transactions=all_transactions)
+
+@app.route('/chart-data', methods=['GET'])
+def chart_data():
+    # Consultar las categorías de gastos dinámicamente desde la base de datos
+    categories = db.session.query(Transaction.category).filter(Transaction.type == "Gasto").distinct().all()
+    categories = [category[0] for category in categories]  # Extraer los nombres de categoría
+
+    # Obtener los totales de cada categoría
     expenses_by_category = {
         category: db.session.query(db.func.sum(Transaction.amount)).filter(Transaction.type == "Gasto", Transaction.category == category).scalar() or 0
         for category in categories
     }
 
-    # Crear gráfico con Plotly
+    # Preparar los datos para el gráfico
     expense_categories = list(expenses_by_category.keys())
     expense_values = list(expenses_by_category.values())
 
-    expense_graph = {
+    # Crear el gráfico
+    figure = {
         'data': [
-            go.Pie(labels=expense_categories, values=expense_values, hole=0.3, name="Gastos por Categoría")
+            go.Pie(labels=expense_categories, values=expense_values, hole=0.3)  # Pie chart con agujero
         ],
         'layout': {
             'title': 'Gastos por Categoría',
@@ -50,69 +66,35 @@ def index():
         }
     }
 
-    # Obtener historial de transacciones
-    all_transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+    # Convertir la figura de Plotly a un diccionario para que sea serializable a JSON
+    return jsonify(figure.to_dict())
 
-    return render_template('index.html', 
-                           total_income=total_income, 
-                           total_expense=total_expense, 
-                           balance=balance, 
-                           expense_graph=expense_graph,
-                           transactions=all_transactions)
 
-@app.route('/transactions', methods=['GET', 'POST'])
-def transactions():
-    if request.method == 'POST':
-        # Obtener los datos del formulario
-        amount = request.form['amount']
-        date = request.form['date']
-        description = request.form['description']
-        category = request.form['category']
-        type_ = request.form['type']
-        payment_method = request.form['payment_method']
 
-        # Convertir la fecha en formato 'YYYY-MM-DD' a un objeto de tipo 'date'
-        from datetime import datetime
-        date_obj = datetime.strptime(date, '%Y-%m-%d').date()
+@app.route('/add-transaction', methods=['POST'])
+def add_transaction():
+    amount = float(request.form['amount'])
+    date = request.form['date']
+    description = request.form['description']
+    category = request.form['category']
+    type_ = request.form['type']
+    payment_method = request.form['payment_method']
 
-        # Crear una nueva transacción
-        new_transaction = Transaction(
-            amount=amount,
-            date=date_obj,  # Usar el objeto 'date'
-            description=description,
-            category=category,
-            type=type_,
-            payment_method=payment_method
-        )
-        
-        db.session.add(new_transaction)
-        db.session.commit()
-        return redirect(url_for('transactions'))
+    date_obj = datetime.datetime.strptime(date, '%Y-%m-%d').date()
 
-    # Mostrar historial de transacciones
-    all_transactions = Transaction.query.order_by(Transaction.date.desc()).all()
-    return render_template('transactions.html', transactions=all_transactions)
+    new_transaction = Transaction(
+        amount=amount,
+        date=date_obj,
+        description=description,
+        category=category,
+        type=type_,
+        payment_method=payment_method
+    )
+    
+    db.session.add(new_transaction)
+    db.session.commit()
 
-@app.route('/chart-data', methods=['GET'])
-def chart_data():
-    # Consulta dinámica desde la base de datos
-    categories = ['Income', 'Expenses']
-    income_total = db.session.query(db.func.sum(Transaction.amount)).filter(Transaction.type == "Ingreso").scalar() or 0
-    expense_total = db.session.query(db.func.sum(Transaction.amount)).filter(Transaction.type == "Gasto").scalar() or 0
-    totals = [income_total, expense_total]
-
-    # Crear gráfico con Plotly
-    figure = {
-        'data': [
-            go.Bar(name='Totals', x=categories, y=totals)
-        ],
-        'layout': {
-            'title': 'Income vs Expenses',
-            'barmode': 'group'
-        }
-    }
-
-    return jsonify(figure)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
