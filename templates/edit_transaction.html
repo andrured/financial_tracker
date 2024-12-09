@@ -1,0 +1,25 @@
+<!-- edit_transaction.html -->
+<form method="POST">
+    <label for="amount">Monto</label>
+    <input type="number" name="amount" value="{{ transaction.amount }}" required>
+    
+    <label for="date">Fecha</label>
+    <input type="date" name="date" value="{{ transaction.date }}" required>
+    
+    <label for="description">Descripción</label>
+    <input type="text" name="description" value="{{ transaction.description }}" required>
+    
+    <label for="category">Categoría</label>
+    <input type="text" name="category" value="{{ transaction.category }}" required>
+    
+    <label for="type">Tipo</label>
+    <select name="type">
+        <option value="Ingreso" {% if transaction.type == 'Ingreso' %}selected{% endif %}>Ingreso</option>
+        <option value="Gasto" {% if transaction.type == 'Gasto' %}selected{% endif %}>Gasto</option>
+    </select>
+    
+    <label for="payment_method">Método de pago</label>
+    <input type="text" name="payment_method" value="{{ transaction.payment_method }}" required>
+    
+    <button type="submit">Guardar cambios</button>
+</form>

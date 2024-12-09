@@ -55,11 +55,17 @@ def chart_data():
     expense_categories = list(expenses_by_category.keys())
     expense_values = list(expenses_by_category.values())
 
+    # Definir los colores para las categorías
+    colors = ['#FF6347', '#66CDAA', '#FFD700', '#8A2BE2', '#D2691E', '#DC143C']  # Colores predefinidos
+
     # Crear el gráfico como un objeto Plotly Figure
     figure = go.Figure(
-        data=[
-            go.Pie(labels=expense_categories, values=expense_values, hole=0.3)  # Pie chart con agujero
-        ]
+        data=[go.Pie(
+            labels=expense_categories,
+            values=expense_values,
+            hole=0.3,
+            marker=dict(colors=colors)  # Asignamos los colores a las categorías
+        )]
     )
     figure.update_layout(title='Gastos por Categoría', showlegend=True)
 
@@ -67,7 +73,17 @@ def chart_data():
     return jsonify(figure.to_dict())
 
 
+#vista para ver historial de transacciones
+@app.route('/history')
+def history():
+    # Obtener historial de transacciones
+    all_transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+    return render_template('history.html', transactions=all_transactions)
 
+
+
+
+#transacciones
 
 @app.route('/add-transaction', methods=['POST'])
 def add_transaction():

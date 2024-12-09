@@ -1,125 +1,208 @@
-/* Definición de colores */
 :root {
-    --dark-bg: #2c2c2c;
-    --dark-card: #444;
-    --primary-color: #ff5733;
-    --secondary-color: #33ff57;
-    --tertiary-color: #3357ff;
-    --contrast-color: #f5f5f5;
-    --card-bg: #333;
-    --table-border: #444;
-    --button-bg: #1d1d1d;
-    --button-hover-bg: #333;
+    --dark-bg: #1e1e1e;
+    --light-bg: #f5f5f5;
+    --primary-color: #007bff;
+    --secondary-color: #28a745;
+    --tertiary-color: #6c757d;
+    --card-bg: #fff;
+    --table-border: #dee2e6;
+    --button-bg: #007bff;
+    --button-hover-bg: #0056b3;
 }
 
 /* Estilo global */
 body {
     background-color: var(--dark-bg);
-    color: var(--contrast-color);
-    font-family: 'Arial', sans-serif;
+    color: var(--light-bg);
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-/* Encabezado */
-h1, h2 {
-    color: var(--contrast-color);
-    text-align: center;
+/* Barra de navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--dark-bg);
+    padding: 0.8rem 2rem;
+    box-shadow: 0 2px 5px rgba(29, 209, 149, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+   
+}
+
+.navbar-left {
+    font-size: 1.5rem;
+    color: var(--light-bg);
+    font-weight: bold;
+}
+
+.navbar-right {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navbar-icon {
+    font-size: 1.3rem;
+    color: var(--light-bg);
+    transition: color 0.3s ease;
+}
+
+.navbar-icon:hover {
+    color: var(--primary-color);
+}
+
+/* Lado izquierdo */
+.navbar-left {
+    font-size: 1.5rem;
+    color: var(--light-bg);
+    font-weight: bold;
+}
+
+/* Lado derecho (iconos) */
+.navbar-right {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* Estilo de los iconos */
+.navbar-icon {
+    font-size: 1.3rem;
+    color: var(--light-bg);
+    transition: color 0.3s ease;
+}
+
+.navbar-icon:hover {
+    color: var(--primary-color);
 }
 
 /* Cards del panel de finanzas */
 .card {
     background-color: var(--card-bg);
     border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    color: #333;
+    margin-bottom: 1rem;
 }
 
 .card-body {
     text-align: center;
+    padding: 1.5rem;
 }
 
-.card h5 {
-    font-size: 1.25rem;
+.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: #fff;
 }
 
-.card p {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.bg-dark {
-    background-color: #333 !important;
+.bg-success {
+    background-color: var(--secondary-color) !important;
+    color: #fff;
 }
 
 .bg-danger {
     background-color: #dc3545 !important;
-}
-
-.bg-primary {
-    background-color: #007bff !important;
+    color: #fff;
 }
 
 /* Gráfico */
-canvas {
-    max-width: 100%;
-    height: auto;
-    margin-top: 20px;
+#chart-container {
+    height: 400px;
+    overflow: hidden; /* Gráfico estático sin scroll */
 }
 
 /* Historial de transacciones */
-table {
-    width: 100%;
-    margin-top: 20px;
-    background-color: #ffffff;
-    color: #fff;
-    border: 1px solid var(--table-border);
+.table-container {
+    max-height: 400px; /* Altura fija para mantener alineado con el gráfico */
+    overflow-y: auto; /* Scroll vertical para historial */
 }
 
-th, td {
+.table {
+    background-color: var(--card-bg);
+    color: #333;
+    border: 1px solid var(--table-border);
+    border-collapse: collapse;
+    width: 100%; /* Asegura que la tabla ocupe el espacio disponible */
+}
+
+.table th {
+    background-color: var(--tertiary-color);
+    color: #fff;
     text-align: left;
-    padding: 8px;
+    padding: 0.75rem;
+    position: sticky;
+    top: 0; /* Encabezado fijo al hacer scroll */
+    z-index: 1; /* Prioridad sobre las filas */
+}
+
+.table td {
+    padding: 0.75rem;
     border-bottom: 1px solid var(--table-border);
 }
 
-th {
-    background-color: #555;
-}
-
-/* Formulario */
-form {
-    background-color: #444;
-    padding: 20px;
-    border-radius: 5px;
-    margin-top: 30px;
-}
-
-form input, form select, form button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: 1px solid #666;
-    background-color: #222;
-    color: #fff;
-}
-
-form button {
-    background-color: var(--primary-color);
-    border: none;
-}
-
-form button:hover {
-    background-color: var(--button-hover-bg);
-}
-
-/* Layout responsivo */
+/* Estilo responsive */
 @media (max-width: 768px) {
-    .row {
-        flex-direction: column;
+    .container {
+        padding: 1rem;
     }
 
-    .col-md-6 {
-        margin-bottom: 20px;
+    h1, h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #chart-container,
+    .table-container {
+        height: auto; /* Altura dinámica en pantallas pequeñas */
+        max-height: 300px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table th, .table td {
+        padding: 0.5rem;
+    }
+
+    .navbar {
+        padding: 0.8rem 1rem;
+    }
+
+    .navbar-left {
+        font-size: 1.2rem;
+    }
+
+    .navbar-right {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1, h2 {
+        font-size: 1.2rem;
+    }
+
+    .card-body {
+        font-size: 0.9rem;
+    }
+
+    .table th, .table td {
+        font-size: 0.8rem;
+    }
+
+    .navbar-left {
+        font-size: 1rem;
     }
 }
