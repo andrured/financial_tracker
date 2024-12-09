@@ -55,19 +55,17 @@ def chart_data():
     expense_categories = list(expenses_by_category.keys())
     expense_values = list(expenses_by_category.values())
 
-    # Crear el gráfico
-    figure = {
-        'data': [
+    # Crear el gráfico como un objeto Plotly Figure
+    figure = go.Figure(
+        data=[
             go.Pie(labels=expense_categories, values=expense_values, hole=0.3)  # Pie chart con agujero
-        ],
-        'layout': {
-            'title': 'Gastos por Categoría',
-            'showlegend': True
-        }
-    }
+        ]
+    )
+    figure.update_layout(title='Gastos por Categoría', showlegend=True)
 
-    # Convertir la figura de Plotly a un diccionario para que sea serializable a JSON
+    # Convertir la figura a un diccionario JSON serializable
     return jsonify(figure.to_dict())
+
 
 
 
