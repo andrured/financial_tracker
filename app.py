@@ -72,19 +72,14 @@ def chart_data():
     # Convertir la figura a un diccionario JSON serializable
     return jsonify(figure.to_dict())
 
-
-#vista para ver historial de transacciones
-@app.route('/history')
-def history():
+# Vista para ver historial de transacciones
+@app.route('/historial')
+def historial():
     # Obtener historial de transacciones
     all_transactions = Transaction.query.order_by(Transaction.date.desc()).all()
-    return render_template('history.html', transactions=all_transactions)
+    return render_template('historial.html', transactions=all_transactions)
 
-
-
-
-#transacciones
-
+# Agregar una nueva transacción
 @app.route('/add-transaction', methods=['POST'])
 def add_transaction():
     amount = float(request.form['amount'])
@@ -109,6 +104,42 @@ def add_transaction():
     db.session.commit()
 
     return redirect(url_for('index'))
+
+#funcion delete
+
+@app.route('/delete/<int:id>', methods=['GET', 'POST'])
+def delete_transaction(id):
+    # Lógica para eliminar la transacción con el id proporcionado
+    transaction_to_delete = Transaction.query.get(id)  # Asumiendo que usas SQLAlchemy
+    if transaction_to_delete:
+        db.session.delete(transaction_to_delete)
+        db.session.commit()
+    return redirect(url_for('historial'))  # Redirige al historial después de eliminar
+
+
+# Editar una transacción existente
+@app.route('/edit_transaction/<int:id>', methods=['GET', 'POST'])
+def edit_transaction(id):
+    # Buscar la transacción en la base de datos
+    transaction = Transaction.query.get_or_404(id)
+
+    if request.method == 'POST':
+        # Actualizar los valores de la transacción con los nuevos datos del formulario
+        transaction.amount = float(request.form['amount'])
+        transaction.date = datetime.datetime.strptime(request.form['date'], '%Y-%m-%d').date()
+        transaction.description = request.form['description']
+        transaction.category = request.form['category']
+        transaction.type = request.form['type']
+        transaction.payment_method = request.form['payment_method']
+
+        # Guardar los cambios en la base de datos
+        db.session.commit()
+
+        # Redirigir a la página principal después de editar
+        return redirect(url_for('index'))
+
+    # Si la solicitud es un GET, mostrar el formulario con los datos actuales de la transacción
+    return render_template('edit_transaction.html', transaction=transaction)
 
 if __name__ == '__main__':
     app.run(debug=True)
