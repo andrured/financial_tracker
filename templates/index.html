@@ -8,12 +8,14 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
     <nav class="navbar">
         <div class="navbar-left">
-            <span style="color: white;" class="navbar-brand">Tracker Financiero</span>
+            <img src="/static/images/logo.png" alt="Logo" style="height: 50px; margin-right: 10px;">
         </div>
         <div class="navbar-right">
             <a class="navbar-icon" title="Notificaciones">
@@ -31,78 +33,78 @@
         <h1 class="text-center">Panel de Finanzas</h1>
 
         <!-- Cards para mostrar los totales -->
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <h5>Total de Ingresos</h5>
-                        <p>${{ total_income }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card bg-danger text-white">
-                    <div class="card-body">
-                        <h5>Total de Gastos</h5>
-                        <p>${{ total_expense }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <h5>Balance</h5>
-                        <p>${{ balance }}</p>
-                    </div>
-                </div>
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Total de Ingresos</h5>
+                <p>${{ "{:,.2f}".format(total_income) }} COP</p>
             </div>
         </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5>Total de Gastos</h5>
+                <p>${{ "{:,.2f}".format(total_expense) }} COP</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Balance</h5>
+                <p>${{ "{:,.2f}".format(balance) }} COP</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <!-- Gráfico y Historial de Transacciones -->
-        <div class="row mt-5">
-            <h2 class="text-center">Gráfico y Historial de Transacciones</h2>
-            <div class="col-md-6">
-                <div id="chart-container" style="width: 100%; height: 400px;"></div>
-                <script>
-                    fetch('/chart-data')
-                        .then(response => response.json())
-                        .then(data => {
-                            // Crear el gráfico con Plotly
-                            Plotly.newPlot('chart-container', data.data, data.layout);
-                        })
-                        .catch(error => console.error('Error al cargar el gráfico:', error));
-                </script>
-            </div>
-            <div class="col-md-6">
-                <div class="table-container">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Monto</th>
-                                <th>Descripción</th>
-                                <th>Categoría</th>
-                                <th>Tipo</th>
-                                <th>Forma de Pago</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for transaction in transactions %}
-                            <tr>
-                                <td>{{ transaction.date }}</td>
-                                <td>{{ transaction.amount }}</td>
-                                <td>{{ transaction.description }}</td>
-                                <td>{{ transaction.category }}</td>
-                                <td>{{ transaction.type }}</td>
-                                <td>{{ transaction.payment_method }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
+<!-- Gráfico y Historial de Transacciones -->
+<div class="row mt-5">
+    <h2 class="text-center">Gráfico y Historial de Transacciones</h2>
+    <div class="col-md-6">
+        <div id="chart-container" style="width: 100%; height: 400px;"></div>
+        <script>
+            fetch('/chart-data')
+                .then(response => response.json())
+                .then(data => {
+                    // Crear el gráfico con Plotly
+                    Plotly.newPlot('chart-container', data.data, data.layout);
+                })
+                .catch(error => console.error('Error al cargar el gráfico:', error));
+        </script>
+    </div>
+    <div class="col-md-6">
+        <div class="table-container">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th>Tipo</th>
+                        <th>Forma de Pago</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.date }}</td>
+                        <td>${{ "{:,.2f}".format(transaction.amount) }} </td>
+                        <td>{{ transaction.description }}</td>
+                        <td>{{ transaction.category }}</td>
+                        <td>{{ transaction.type }}</td>
+                        <td>{{ transaction.payment_method }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
+
 
         <!-- Formulario para agregar transacciones -->
         <div class="mt-5">
@@ -150,9 +152,10 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Agregar</button>
+                
                 <div class="mt-4">
-                    <a href="{{ url_for('historial') }}" class="btn btn-info">Ver Historial y Editar</a>
+                    <button style="background-color:#5b8bbd;;" type="submit" class="btn btn-primary">Agregar</button>
+                    <a style="background-color:aquamarine;" href="{{ url_for('historial') }}" class="btn btn-info">Ver Historial y Editar</a>
                 </div>
             </form>
         </div>

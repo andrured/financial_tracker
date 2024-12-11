@@ -1,14 +1,28 @@
 :root {
     --dark-bg: #1e1e1e;
     --light-bg: #f5f5f5;
-    --primary-color: #007bff;
-    --secondary-color: #28a745;
+    --primary-color: #5b8bbd;
+    --secondary-color: #31688e;
     --tertiary-color: #6c757d;
     --card-bg: #fff;
     --table-border: #dee2e6;
-    --button-bg: #007bff;
+    --button-bg: #537191;
     --button-hover-bg: #0056b3;
 }
+
+/* Aplicar la fuente Lora */
+.container h1 {
+    font-family: 'Lora', serif;
+    font-weight: 700; /* Opcional: puedes ajustar el grosor de la letra */
+    color: #ecf0f1; /* Texto claro */
+}
+
+/* Opcional: Ajustar el tamaño y el espaciado */
+.container h1 {
+    font-size: 36px; /* Ajusta el tamaño según tu preferencia */
+    letter-spacing: 1.2px; /* Ajusta el espaciado entre letras */
+}
+
 
 /* Estilo global */
 body {
@@ -32,13 +46,21 @@ body {
     align-items: center;
     background-color: var(--dark-bg);
     padding: 0.8rem 2rem;
-    box-shadow: 0 2px 5px rgba(29, 209, 149, 0.1);
+    box-shadow: 0 3px 9px rgba(29, 209, 149, 0.1);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
+    height: 65px;
    
+}
+.logo{
+    position: absolute;
+    width: 180px;
+    height: 100px;
+    top: 30px;
+    left: 90px;
 }
 
 .navbar-left {
@@ -112,7 +134,7 @@ body {
 }
 
 .bg-danger {
-    background-color: #dc3545 !important;
+    background-color: #457aa5 !important;
     color: #fff;
 }
 
